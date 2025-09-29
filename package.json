@@ -1,0 +1,22 @@
+{
+  "name": "prayer-note-app",
+  "version": "1.0.0",
+  "description": "간단하고 아름다운 기도 관리 애플리케이션",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx live-server ."
+  },
+  "keywords": [
+    "prayer",
+    "note",
+    "christian",
+    "app"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "serve": "^14.2.0"
+  }
+}

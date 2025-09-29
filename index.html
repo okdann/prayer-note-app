@@ -3,164 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>기도노트</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f0f0f0;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .input-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #45a049;
-        }
-
-        .prayer-list {
-            margin-top: 20px;
-        }
-
-        .prayer-item {
-            padding: 15px;
-            border: 1px solid #eee;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        .prayer-item:hover {
-            background: #f9f9f9;
-        }
-
-        .empty {
-            text-align: center;
-            color: #999;
-            padding: 20px;
-        }
-    </style>
+    <meta name="description" content="간단하고 아름다운 기도 관리 앱">
+    <title>기도노트 - Prayer Note</title>
+    
+    <!-- CSS 파일들 -->
+    <link rel="stylesheet" href="src/css/main.css">
+    <link rel="stylesheet" href="src/css/components.css">
+    <link rel="stylesheet" href="src/css/responsive.css">
 </head>
 <body>
-    <div class="container">
-        <h1>🙏 나의 기도노트</h1>
-        
-        <div class="input-box">
-            <input type="text" id="prayerInput" placeholder="기도 제목을 입력하세요">
-            <button onclick="addPrayer()">추가</button>
+    <div id="app">
+        <!-- 시작 화면 -->
+        <div id="startScreen" class="start-screen">
+            <div class="start-container">
+                <h1 class="app-title">🙏 기도노트</h1>
+                <p class="app-subtitle">간단하게 기도를 기록해보세요</p>
+                <div class="start-form">
+                    <input 
+                        type="text" 
+                        id="userName" 
+                        class="input-field" 
+                        placeholder="이름을 입력하세요"
+                        maxlength="20"
+                    >
+                    <button id="startBtn" class="btn btn-primary">시작하기</button>
+                </div>
+            </div>
         </div>
-        
-        <div id="prayerList" class="prayer-list">
-            <div class="empty">아직 기도가 없습니다</div>
+
+        <!-- 메인 앱 -->
+        <div id="mainApp" class="main-app hidden">
+            <!-- 헤더 -->
+            <header class="app-header">
+                <div class="header-content">
+                    <h1 id="headerTitle" class="header-title">기도노트</h1>
+                    <div class="header-actions">
+                        <button id="helpBtn" class="btn-icon">?</button>
+                        <button id="logoutBtn" class="btn-text">로그아웃</button>
+                    </div>
+                </div>
+                
+                <!-- 입력 영역 -->
+                <div class="input-section">
+                    <input 
+                        type="text" 
+                        id="prayerInput" 
+                        class="prayer-input" 
+                        placeholder="새로운 기도를 입력하세요"
+                    >
+                    <select id="prayerType" class="prayer-type-select">
+                        <option value="supplication">간구</option>
+                        <option value="thanksgiving">감사</option>
+                        <option value="adoration">찬양</option>
+                        <option value="confession">자백</option>
+                    </select>
+                    <button id="addBtn" class="btn btn-add">추가</button>
+                </div>
+            </header>
+
+            <!-- 도움말 -->
+            <div id="helpModal" class="modal hidden">
+                <div class="modal-content">
+                    <h3>상태 설명</h3>
+                    <p><strong>W (Wait)</strong> - 기다리는 중</p>
+                    <p><strong>Y (Yes)</strong> - 응답받음</p>
+                    <p><strong>N (No)</strong> - 응답 안됨</p>
+                    <button id="closeHelp" class="btn btn-secondary">닫기</button>
+                </div>
+            </div>
+
+            <!-- 통계 -->
+            <section id="stats" class="stats-section">
+                <!-- JavaScript로 동적 생성 -->
+            </section>
+
+            <!-- 필터 -->
+            <section class="filter-section">
+                <button class="filter-btn active" data-filter="all">전체</button>
+                <button class="filter-btn" data-filter="W">기다림</button>
+                <button class="filter-btn" data-filter="Y">응답됨</button>
+                <button class="filter-btn" data-filter="N">응답안됨</button>
+            </section>
+
+            <!-- 기도 목록 -->
+            <main id="prayerList" class="prayer-list">
+                <!-- JavaScript로 동적 생성 -->
+            </main>
         </div>
     </div>
 
-    <script>
-        // 기도 목록을 저장할 배열
-        let prayers = [];
-
-        // 페이지 로드시 저장된 기도 불러오기
-        window.onload = function() {
-            const saved = localStorage.getItem('prayers');
-            if (saved) {
-                prayers = JSON.parse(saved);
-                displayPrayers();
-            }
-        };
-
-        // 기도 추가 함수
-        function addPrayer() {
-            const input = document.getElementById('prayerInput');
-            const text = input.value.trim();
-            
-            if (!text) {
-                alert('기도 제목을 입력해주세요!');
-                return;
-            }
-            
-            // 기도 객체 생성
-            const prayer = {
-                id: Date.now(),
-                text: text,
-                date: new Date().toLocaleDateString()
-            };
-            
-            // 배열에 추가
-            prayers.unshift(prayer);
-            
-            // 저장
-            localStorage.setItem('prayers', JSON.stringify(prayers));
-            
-            // 화면 업데이트
-            displayPrayers();
-            
-            // 입력창 비우기
-            input.value = '';
-        }
-
-        // 기도 목록 표시 함수
-        function displayPrayers() {
-            const listDiv = document.getElementById('prayerList');
-            
-            if (prayers.length === 0) {
-                listDiv.innerHTML = '<div class="empty">아직 기도가 없습니다</div>';
-                return;
-            }
-            
-            listDiv.innerHTML = prayers.map(prayer => `
-                <div class="prayer-item">
-                    <div>${prayer.text}</div>
-                    <small style="color: #666;">${prayer.date}</small>
-                </div>
-            `).join('');
-        }
-
-        // 엔터키로도 추가 가능
-        document.getElementById('prayerInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addPrayer();
-            }
-        });
-    </script>
+    <!-- JavaScript 파일들 (순서 중요!) -->
+    <script src="src/js/utils.js"></script>
+    <script src="src/js/storage.js"></script>
+    <script src="src/js/auth.js"></script>
+    <script src="src/components/templates.js"></script>
+    <script src="src/js/prayers.js"></script>
+    <script src="src/js/app.js"></script>
 </body>
 </html>
